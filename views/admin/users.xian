@@ -1,0 +1,267 @@
+
+{{> head}}
+<body class="bg-[#0B1120] text-gray-100">
+
+  <!-- HEADER BAR -->
+  <div class="bg-[#111A2B] border-b border-[#1B2940] text-[#22D3C5] px-8 py-8 font-medium shadow flex justify-between items-center">
+  <span>Welcome, {{userName}}!</span>
+  <span class="text-[#22D3C5]">Admin Dashboard</span>
+  </div>
+
+  <div class="flex min-h-[calc(100vh-60px)]">
+
+    <!-- SIDEBAR -->
+    <div class="w-40 bg-[#111A2B] p-6 shadow border-r border-[#1B2940]">
+      <a href="/dashboard"
+         class="block w-full px-4 py-3 mb-2 rounded-lg text-gray-300 hover:bg-[#1B2940] hover:text-[#5EEAD4]">
+         View All
+      </a>
+      <a href="/users"
+         class="block w-full px-4 py-3 mb-2 rounded-lg bg-[#1B2940] text-[#5EEAD4] font-medium">
+         Users
+      </a>
+      <a href="/logout"
+         class="block w-full px-4 py-3 mb-2 rounded-lg text-red-400 font-medium hover:bg-red-900/30">
+         Logout
+      </a>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="flex-1 p-8">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-2xl font-bold text-white"> Users</h1>
+          <p class="text-slate-400 mt-1 mb-6">
+       
+      </p>
+        </div>
+
+        <button type="button" onclick="openAddUserModal()"
+                class="bg-[#22D3C5] text-[#0B1120] px-4 py-2 rounded hover:bg-[#5EEAD4] transition font-semibold">
+           Add New User
+        </button>
+      </div>
+
+      <!-- GREEN FLASH NOTIFICATION -->
+      {{#if success_msg}}
+        <div class="bg-green-900/30 border border-green-700 text-green-300 px-4 py-3 rounded mt-4 mb-4 text-center">
+          {{success_msg}}
+        </div>
+      {{/if}}
+
+      {{#if error_msg}}
+        <div class="bg-red-900/30 border border-red-700 text-red-300 px-4 py-3 rounded mt-4 mb-4 text-center">
+          {{error_msg}}
+        </div>
+      {{/if}}
+
+      {{#if users}}
+        <div class="bg-[#111A2B] border border-[#1B2940] rounded-lg shadow overflow-x-auto">
+          <table class="w-full border-collapse">
+            <thead>
+              <tr class="bg-[#1B2940] text-left">
+                <th class="px-4 py-3 font-semibold text-gray-200">Name</th>
+                <th class="px-4 py-3 font-semibold text-gray-200">Email</th>
+                <th class="px-4 py-3 font-semibold text-gray-200">Role</th>
+                <th class="px-4 py-3 font-semibold text-gray-200">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[#1B2940]">
+              {{#each users}}
+                <tr class="border-t border-[#1B2940] hover:bg-[#1B2940]/60">
+                  <td class="px-4 py-3 text-gray-100">{{name}}</td>
+                  <td class="px-4 py-3 text-gray-300">{{email}}</td>
+                  <td class="px-4 py-3 text-gray-300">{{role}}</td>
+                  <td class="px-4 py-3">
+                    <button type="button" onclick="editUser(this)"
+                            data-id="{{id}}"
+                            data-name="{{name}}"
+                            data-email="{{email}}"
+                            data-role="{{role}}"
+                            class="bg-[#22D3C5] text-[#0B1120] px-3 py-1 rounded text-sm mr-1 hover:bg-[#5EEAD4] font-medium">
+                      Edit
+                    </button>
+                    <button type="button" onclick="openDeleteUserModal(this)"
+                            data-id="{{id}}"
+                            data-name="{{name}}"
+                            class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700">
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
+      {{else}}
+        <div class="bg-[#111A2B] border border-[#1B2940] rounded-lg shadow p-8 text-center text-gray-400">
+          No users yet. Click "Add New User" to create the first account.
+        </div>
+      {{/if}}
+    </div>
+  </div>
+
+  <!-- ADD USER MODAL -->
+  <div id="addUserModal" class="hidden fixed inset-0 z-50 bg-black/70 items-center justify-center p-4">
+    <div class="bg-[#111A2B] border border-[#1B2940] text-gray-100 w-full max-w-lg rounded-lg p-6">
+      <h2 class="text-xl font-bold mb-4 text-white">Add User</h2>
+      <form method="POST" action="/users">
+        <label class="block mb-1 text-gray-300">Name</label>
+        <input name="name" required class="bg-[#0B1120] border border-[#1B2940] text-white p-2 w-full mb-3 rounded focus:outline-none focus:ring-2 focus:ring-[#22D3C5]">
+
+        <label class="block mb-1 text-gray-300">Email</label>
+        <input name="email" type="email" required class="bg-[#0B1120] border border-[#1B2940] text-white p-2 w-full mb-3 rounded focus:outline-none focus:ring-2 focus:ring-[#22D3C5]">
+
+        <label class="block mb-1 text-gray-300">Password</label>
+        <input name="password" type="password" required class="bg-[#0B1120] border border-[#1B2940] text-white p-2 w-full mb-3 rounded focus:outline-none focus:ring-2 focus:ring-[#22D3C5]">
+
+        <label class="block mb-1 text-gray-300">Role</label>
+        <select name="role" class="bg-[#0B1120] border border-[#1B2940] text-white p-2 w-full mb-4 rounded focus:outline-none focus:ring-2 focus:ring-[#22D3C5]">
+          <option value="staff">staff</option>
+          <option value="librarian">librarian</option>
+          <option value="admin">admin</option>
+        </select>
+
+        <div class="flex justify-end gap-2">
+          <button type="button" onclick="hideModal('addUserModal')" class="bg-[#1B2940] text-gray-200 px-4 py-2 rounded hover:bg-slate-700">
+            Cancel
+          </button>
+          <button type="submit" class="bg-[#22D3C5] text-[#0B1120] px-4 py-2 rounded hover:bg-[#5EEAD4] font-semibold">
+            Add User
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- EDIT USER MODAL -->
+  <div id="editUserModal" class="hidden fixed inset-0 z-50 bg-black/70 items-center justify-center p-4">
+    <div class="bg-[#111A2B] border border-[#1B2940] text-gray-100 w-full max-w-lg rounded-lg p-6">
+      <h2 class="text-xl font-bold mb-4 text-white">Edit User</h2>
+      <form id="editUserForm" method="POST">
+        <label class="block mb-1 text-gray-300">Name</label>
+        <input id="editUserName" name="name" required class="bg-[#0B1120] border border-[#1B2940] text-white p-2 w-full mb-3 rounded focus:outline-none focus:ring-2 focus:ring-[#22D3C5]">
+
+        <label class="block mb-1 text-gray-300">Email</label>
+        <input id="editUserEmail" name="email" type="email" required class="bg-[#0B1120] border border-[#1B2940] text-white p-2 w-full mb-3 rounded focus:outline-none focus:ring-2 focus:ring-[#22D3C5]">
+
+        <label class="block mb-1 text-gray-300">Role</label>
+        <select id="editUserRole" name="role" class="bg-[#0B1120] border border-[#1B2940] text-white p-2 w-full mb-3 rounded focus:outline-none focus:ring-2 focus:ring-[#22D3C5]">
+          <option value="staff">staff</option>
+          <option value="librarian">librarian</option>
+          <option value="admin">admin</option>
+        </select>
+
+        <label class="block mb-1 text-gray-300">New Password <span class="text-gray-500 text-sm">(leave blank to keep)</span></label>
+        <input id="editUserPassword" name="password" type="password" class="bg-[#0B1120] border border-[#1B2940] text-white p-2 w-full mb-4 rounded focus:outline-none focus:ring-2 focus:ring-[#22D3C5]">
+
+        <div class="flex justify-end gap-2">
+          <button type="button" onclick="hideModal('editUserModal')" class="bg-[#1B2940] text-gray-200 px-4 py-2 rounded hover:bg-slate-700">
+            Cancel
+          </button>
+          <button type="submit" class="bg-[#22D3C5] text-[#0B1120] px-4 py-2 rounded hover:bg-[#5EEAD4] font-semibold">
+            Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- DELETE USER MODAL -->
+  <div id="deleteUserModal" class="hidden fixed inset-0 z-[60] bg-black/70 items-center justify-center p-4">
+    <div class="bg-[#111A2B] border border-[#1B2940] text-gray-100 w-full max-w-sm rounded-xl p-6 shadow-xl">
+      <div class="text-center">
+        <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-900/40">
+          <span class="text-3xl text-red-400">!</span>
+        </div>
+        <h2 class="text-xl font-bold text-white">Delete User?</h2>
+        <p class="text-gray-300 mt-2">
+          Are you sure you want to delete <strong id="deleteUserName" class="text-white"></strong>?
+          This action cannot be undone.
+        </p>
+      </div>
+      <div class="flex justify-center gap-3 mt-6">
+        <button type="button" onclick="hideModal('deleteUserModal')" class="px-4 py-2 rounded-lg bg-[#1B2940] text-gray-200 hover:bg-slate-700">
+          Cancel
+        </button>
+        <button type="button" onclick="confirmDeleteUser()" class="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700">
+          Yes, Delete
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ==================================================
+    // MODAL HELPERS — ipakita / itago
+    // ==================================================
+    function showModal(id) {
+      const modal = document.getElementById(id);
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function hideModal(id) {
+      const modal = document.getElementById(id);
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    // ==================================================
+    // ADD USER
+    // ==================================================
+    function openAddUserModal() {
+      showModal('addUserModal');
+    }
+
+    // ==================================================
+    // EDIT USER — gagamitin ang data-* ng button
+    // ==================================================
+    function editUser(button) {
+      const id = button.dataset.id;
+      document.getElementById('editUserName').value = button.dataset.name;
+      document.getElementById('editUserEmail').value = button.dataset.email;
+      document.getElementById('editUserRole').value = button.dataset.role;
+      document.getElementById('editUserPassword').value = '';
+
+      // POST /users/:id ang gagamitin sa pag-update
+      document.getElementById('editUserForm').action = '/users/' + encodeURIComponent(id);
+      showModal('editUserModal');
+    }
+
+    // ==================================================
+    // DELETE USER — fetch DELETE
+    // ==================================================
+    let selectedUserId = null;
+
+    function openDeleteUserModal(button) {
+      selectedUserId = button.dataset.id;
+      document.getElementById('deleteUserName').textContent = button.dataset.name;
+      showModal('deleteUserModal');
+    }
+
+    async function confirmDeleteUser() {
+      if (!selectedUserId) {
+        alert('No user selected.');
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          '/users/' + encodeURIComponent(selectedUserId),
+          { method: 'DELETE' }
+        );
+
+        if (!response.ok) throw new Error('Failed to delete user.');
+
+        const data = await response.json();
+        window.location.href = data.redirect || '/users';
+      } catch (error) {
+        console.error('Delete error:', error);
+        alert(error.message);
+      }
+    }
+  </script>
+
+{{> footer }}
+```
